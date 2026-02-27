@@ -38,13 +38,13 @@ import {
 } from 'lucide-react';
 
 // Importando as imagens
-import interiorImage1 from './assets/happy1.jpg';
-import interiorImage2 from './assets/happy2.jpg';
-import jardimImage from './assets/happy3.jpg';
+import interiorImage1 from './assets/happy1.png';
+import interiorImage2 from './assets/happy2.png';
+import jardimImage from './assets/happy3.png';
 
 function App() {
   // ⚙️ CONFIGURAÇÃO
-  const SERIES_DISPONIVEIS = ['Grupo IV','Grupo V', 'Maternal(3)', 'Maternalzinho(2)', '1º Ano', '2º Ano', '3º Ano', '4º Ano', '5º Ano'];
+  const SERIES_DISPONIVEIS = ['3º Ano', '4º Ano', '5º Ano'];
 
   // Estados para o formulário
   const [showForm, setShowForm] = useState(false);
@@ -1031,3 +1031,4 @@ function App() {
 }
 
 export default App;
+
