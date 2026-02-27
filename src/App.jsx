@@ -13,7 +13,7 @@ import {
   Clock, 
   Calendar, 
   Users, 
-  CreditCard, 
+  CreditCard,
   FileText, 
   Phone, 
   Mail,
@@ -45,22 +45,6 @@ import jardimImage from './assets/happy3.jpg';
 function App() {
   // ⚙️ CONFIGURAÇÃO
   const SERIES_DISPONIVEIS = ['Grupo IV','Grupo V', 'Maternal(3)', 'Maternalzinho(2)', '1º Ano', '2º Ano', '3º Ano', '4º Ano', '5º Ano'];
-
-  // ============================================
-  // TAXAS DE ANTECIPAÇÃO
-  // ============================================
-  const TAXA_ANTECIPACAO_VISTA = 0.0115;
-  const TAXA_ANTECIPACAO_PARCELADO = 0.016;
-
-  const calcularTaxaAntecipacao = (valorBase, numParcelas) => {
-    if (numParcelas === 1) {
-      return valorBase * TAXA_ANTECIPACAO_VISTA;
-    } else {
-      const somaMeses = (numParcelas * (numParcelas + 1)) / 2;
-      const valorParcela = valorBase / numParcelas;
-      return valorParcela * TAXA_ANTECIPACAO_PARCELADO * somaMeses;
-    }
-  };
 
   // Estados para o formulário
   const [showForm, setShowForm] = useState(false);
@@ -217,26 +201,8 @@ function App() {
   // ============================================
   const calculatePrice = () => {
     const PRECO_BASE = 10.0;
-    let valorTotal = PRECO_BASE;
-    
-    if (formData.paymentMethod === 'credit') {
-      let taxaPercentual = 0;
-      const taxaFixa = 0.49;
-      const parcelas = parseInt(formData.installments) || 1;
-      
-      if (parcelas === 1) {
-        taxaPercentual = 0.0299;
-      } else if (parcelas >= 2 && parcelas <= 3) {
-        taxaPercentual = 0.0349;
-      }
-      
-      const taxaCartao = valorTotal * taxaPercentual;
-      const taxaAntecipacao = calcularTaxaAntecipacao(valorTotal, parcelas);
-      
-      valorTotal = valorTotal + taxaCartao + taxaFixa + taxaAntecipacao;
-    }
-    
-    const valorParcela = valorTotal / (parseInt(formData.installments) || 1);
+    const valorTotal = PRECO_BASE;
+    const valorParcela = valorTotal;
     return { valorTotal, valorParcela };
   };
 
@@ -665,7 +631,7 @@ function App() {
                     </li>
                     <li className="flex items-start">
                       <Shield className="h-4 w-4 text-destructive mr-2 mt-0.5" />
-                      A participação NÃO é obrigatória
+                      Pagamento via PIX ou dinheiro na diretoria
                     </li>
                     <li className="flex items-start">
                       <Shield className="h-4 w-4 text-destructive mr-2 mt-0.5" />
@@ -939,50 +905,33 @@ function App() {
 
                       <div 
                         className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          formData.paymentMethod === 'credit' 
+                          formData.paymentMethod === 'dinheiro' 
                             ? 'border-orange-400 bg-orange-50' 
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
-                        onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'credit' }))}
+                        onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'dinheiro', installments: 1 }))}
                       >
                         <div className="flex items-center">
                           <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                            formData.paymentMethod === 'credit' ? 'border-orange-400 bg-orange-400' : 'border-gray-300'
+                            formData.paymentMethod === 'dinheiro' ? 'border-orange-400 bg-orange-400' : 'border-gray-300'
                           }`}>
-                            {formData.paymentMethod === 'credit' && (
+                            {formData.paymentMethod === 'dinheiro' && (
                               <div className="w-full h-full rounded-full bg-orange-400"></div>
                             )}
                           </div>
                           <div>
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm">💳</span>
-                              <span className="text-sm font-medium">Cartão de Crédito</span>
+                              <span className="text-sm">💵</span>
+                              <span className="text-sm font-medium">Dinheiro</span>
+                              <span className="text-sm" translate="no">R$ 10,00</span>
                             </div>
-                            <div className="text-xs text-green-600 ml-6 font-medium">
-                              Parcele em até 3x (com juros)
+                            <div className="text-xs text-blue-600 ml-6 font-medium">
+                              Pague diretamente na diretoria da escola
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    {formData.paymentMethod === 'credit' && (
-                      <div className="mb-6">
-                        <Label className="text-sm font-medium">Número de Parcelas</Label>
-                        <select
-                          value={formData.installments}
-                          onChange={(e) => setFormData(prev => ({ ...prev, installments: parseInt(e.target.value) }))}
-                          className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mt-2"
-                        >
-                          <option value={1}>1x de R$ {valorTotal.toFixed(2).replace('.', ',')}</option>
-                          <option value={2}>2x de R$ {(valorTotal / 2).toFixed(2).replace('.', ',')}</option>
-                          <option value={3}>3x de R$ {(valorTotal / 3).toFixed(2).replace('.', ',')}</option>
-                        </select>
-                        <p className="text-xs text-gray-500 mt-1">
-                          * Taxas de cartão aplicadas ao valor total
-                        </p>
-                      </div>
-                    )}
 
                     {/* Valor Total */}
                     <div className="bg-orange-100 p-4 rounded-lg border border-orange-200">
@@ -994,14 +943,9 @@ function App() {
                         <div className="text-2xl font-bold text-orange-900">
                           R$ {valorTotal.toFixed(2).replace('.', ',')}
                         </div>
-                        {formData.paymentMethod === 'credit' && formData.installments > 1 && (
-                          <div className="text-sm text-orange-700 mt-1">
-                            {formData.installments}x de R$ {valorParcela.toFixed(2).replace('.', ',')}
-                          </div>
-                        )}
-                        {formData.paymentMethod === 'credit' && (
-                          <div className="text-xs text-orange-600 mt-1">
-                            (inclui taxas do cartão)
+                        {formData.paymentMethod === 'dinheiro' && (
+                          <div className="text-xs text-blue-600 mt-2">
+                            Dirija-se à diretoria da escola para efetuar o pagamento em dinheiro
                           </div>
                         )}
                       </div>
@@ -1087,53 +1031,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
