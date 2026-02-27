@@ -44,7 +44,7 @@ import jardimImage from './assets/happy3.png';
 
 function App() {
   // ⚙️ CONFIGURAÇÃO
-  const SERIES_DISPONIVEIS = ['3º Ano', '4º Ano', '5º Ano'];
+  const SERIES_DISPONIVEIS = ['3º Ano', '4º Ano', '5º Ano','6º Ano','7º Ano','8º Ano','9º Ano'];
 
   // Estados para o formulário
   const [showForm, setShowForm] = useState(false);
@@ -1031,4 +1031,5 @@ function App() {
 }
 
 export default App;
+
 
